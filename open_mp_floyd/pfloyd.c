@@ -1,0 +1,148 @@
+#include "globals.h"
+#include "functions.h"
+
+/*sequential version of floyd_algorithm. finds the shortest paths in the matrix*/
+void floyd_algorithm(int num_of_nodes)
+{
+	int k,u,v;
+
+	double t1=return_time();
+
+	for(k=0;k<num_of_nodes;k++)
+	{
+		for(u=0;u<num_of_nodes;u++)
+		{
+			for(v=0;v<num_of_nodes;v++)
+			{
+				g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+			}
+		}
+	}
+
+	double t2=return_time();
+	printf("%.6lf seconds elapsed\n", t2-t1);
+
+}
+
+
+
+/* openMP version of floyd_algorithm. finds the shortest paths in the matrix*/
+void openMP_floyd_algorithm(int num_of_nodes, int policy)
+{
+        
+        //omp_set_num_threads(num_of_threads);
+ 
+        double t1=return_time();
+ 
+                int k,u,v,id,tnum,istart,iend;
+ 
+                //getting the ->optimal<- maximum threads the processor can afford
+                int nthreads = omp_get_max_threads();
+                int chunk = num_of_nodes/nthreads;
+               	
+                if(policy==1)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(static)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+					
+		            }
+										
+				}
+                else if(policy==2)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(dynamic)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+		            }					
+				}
+                else if(policy==3)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(dynamic, chunk)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+		            }					
+				}
+                else if(policy==4)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(guided)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+		            }					
+				}
+                else if(policy==5)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(guided, chunk/10)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+		            }					
+				}
+                else if(policy==6)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(runtime)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+		            }					
+				}
+                else if(policy==7)
+				{
+					#pragma omp parallel for private(k,u,v) schedule(static, chunk)
+		            for(k=0;k<num_of_nodes;k++)
+		            {
+		                    for(u=0;u<num_of_nodes;u++)
+		                    {
+		                            for(v=0;v<num_of_nodes;v++)
+		                            {
+		                                    g.nodes[u][v]=min(g.nodes[u][v], g.nodes[u][k]+g.nodes[k][v]);
+		                            }
+		                    }
+		            }					
+				}
+
+        double t2=return_time();
+        printf("%.6lf seconds elapsed\n", t2-t1);
+ 
+}
+
